@@ -1,0 +1,31 @@
+<html>
+    <head>
+     <link rel="stylesheet" type="text/css" href="/css/styles.css">
+    </head>
+    <body>
+    {{>menu}}
+        <h1>Update Movie</h1>
+        {{#movie}}
+        <form id="updateMovieForm" method= 'POST' action= '/movies/update-movie?movieId={{movieId}}'>
+            <input type="text" placeholder ="{{title}}" name="title" required/>
+            <input type="text" placeholder ="{{description}}" name= "description" required />
+            <label for="cars">Choose a Genre:</label>
+            <select name="genre" placeholder="{{genre}}" id="genre">
+                <option value="action">Action</option>
+                <option value="comedy">Comedy</option>
+                <option value="drama">Drama</option>
+                <option value="fantasy">Fantasy</option>
+                <option value="horror">Horror</option>
+                <option value="mystery">Mystery</option>
+                <option value="romance">Romance</option>
+                <option value="thriller">Thriller</option>
+            </select>
+            <input type="text" placeholder="{{image}}" name= "image" required/>
+            <button id= "save">Save</button>
+        </form>
+      {{/movie}}
+       {{^movie}}
+            <h2>No movie found.<h2>
+        {{/movie}}
+    </body>
+</html>

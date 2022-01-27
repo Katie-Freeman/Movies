@@ -1,0 +1,26 @@
+<html>
+    <head>
+     <link rel="stylesheet" type="text/css" href="/css/styles.css">
+    </head>
+    <body>
+    {{>menu}}
+        <h1>Movies</h1>
+
+    <div id=moviesContainer>    
+        <ul>
+        {{#allMovies}}
+            <li>
+              <a href ='/movies/{{movieId}}'>  <b>{{title}}</b> </a>
+                <form method='POST' action= '/movies/delete-movie?movieId={{movieId}}' >
+                    <button id="delete">Delete</button>
+                </form>
+            </li>
+        {{/allMovies}}
+        </ul>
+    </div>
+        
+        {{^allMovies}}
+            <h2>There are no Movies.<h2>
+        {{/allMovies}}
+    </body>
+</html>
