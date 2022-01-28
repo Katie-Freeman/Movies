@@ -1,0 +1,14 @@
+<html>
+    <head>
+     <link rel="stylesheet" type="text/css" href="/css/styles.css">
+    </head>
+    <body>
+    {{>menu}}
+        <h1>Creat Your account</h1>
+        <form id="addUser" method= 'POST' action= "/add-user">
+            <input id="username" type="text" placeholder ="Username" name="username" required/>
+            <input id="password" type="text" placeholder ="password" name= "password" required />
+            <button id= "save">Submit</button>
+        </form>
+    </body>
+</html>

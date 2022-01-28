@@ -1,0 +1,18 @@
+<html>
+    <head>
+     <link rel="stylesheet" type="text/css" href="/css/styles.css">
+    </head>
+    <body>
+    {{>menu}}
+        <h1>Index</h1>
+        <form method = "POST" action = '/login'>
+            <input id="username" type = "text" name = "username" placeholder = "username" />
+            <input id="password" type = "password" name = "password" placeholder = "password" />
+            <button id="login">Login</button>
+             </form>
+             
+            <a id="register" href = "/add-user">Create an account<a>
+           
+        {{errorMessage}}
+    </body>
+</html>

@@ -1,0 +1,58 @@
+body {
+    background-color: #fde4cf;
+    font-family: sans-serif;
+    color: #586F7C
+    
+}
+#moviesContainer {
+    display: flex;
+    background-color: #ffcfd2;
+    
+}
+
+#moviesContainer li, li form{
+    display: flex;
+    list-style: none;
+    font-family: sans-serif;
+    font-size:large;
+    align-items:baseline;
+    margin: 1em;
+}
+
+#moviesContainer li a {
+    color: #586F7C;
+}
+
+#title, #description, #genre, #image {
+    background-color: #cfbaf090;
+    border: 2px solid #cfbaf0;
+    font-family: sans-serif;
+    
+}
+
+#save, #delete {
+    background-color: #cfbaf0;
+    border-radius: 3px;
+    border: 2px solid #bc9eec;
+}
+
+.option {
+    background-color:#fde4cf;
+    border: 2px solid #cfbaf0;
+    font-family: sans-serif;  
+}
+
+#menu {
+    display: flex;
+    border: 2px solid #b999ee;
+    border-radius: 3px;
+    padding: .5em;
+    justify-content: space-around;
+    background-color: #cfbaf0;
+    font-family: sans-serif;
+      
+}
+
+#menu a {
+    color: #586F7C;
+}
