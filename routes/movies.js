@@ -2,31 +2,13 @@
 const express = require('express')
 const router = express.Router()
 const session = require('express-session')
+const authenticateMiddleware = require('../middlewears/authenticate')
 
 router.use(session({
     secret: 'Super secret words',
     resave: false,
     saveUninitalized: true
   }))
-
-function logMiddleware(req, res, next) {
-    console.log('MIDDLEWARE')
-    next()  
-}
-
- function authenticateMiddleware(req, res, next) {
-
-    if(req.session) {
-        if(req.session.username) {
-            next() 
-        } else {
-            res.redirect('/')
-        }
-    } else {
-        res.redirect('/')
-    }
-
-}
 
 movies = []
 
@@ -40,22 +22,27 @@ router.get('/api/movies', (req, res) => {
 
 router.post('/add-movie',(req, res) => {
     let{title, description, genre, image} = req.body
-    const movie = {movieId: movies.length +1, title: title, description: description, genre: genre, image: image}
-    
-    movies.push(movie)
-    console.log(movie)
-    res.redirect('/movies')
+    const movie = {movieId: movies.length +1, title: title, description: description, genre: genre, image: image, userId: req.session.userId}
+    db.none('INSERT INTO movies(movie_title, movie_description, genre, image_url) VALUES($1, $2, $3, $4)',[title, description, genre, image])
+    .then(() => {
+        res.redirect('/movies')
 })
 
 router.get ('/', authenticateMiddleware, (req, res) => {
-    res.render('movies', {allMovies: movies})
+    const userMovies = movies.filter(movie => movie.username === req.session.username)
+    db.one('SELECT movie_title, movie_description, genre, image_url FROM movies')
+    .then(() => {
+        res.render('movies', {allMovies: userMovies}) 
+    })
 })
 
 router.post('/delete-movie',  (req, res) => {
     const movieId = req.query.movieId
-    console.log("DELETING")
-    movies = movies.filter(movie => movie.movieId != movieId)
-    res.redirect('/movies')
+    db.one('DELETE FROM movies WHERE movie_id = $1 []')
+    .then(() => {
+        res.redirect('/movies')
+    })
+    
 })
 
 router.get('/update-movie',  authenticateMiddleware, (req, res) => {
@@ -78,7 +65,7 @@ router.post('/update-movie', (req, res) => {
     res.redirect('/movies')
 })
 
-router.get('/:movieId', (req, res) =>{
+router.get('/:movieId', authenticateMiddleware, (req, res) =>{
     const movieId =req.params.movieId
     const movie = movies.filter(movie => movie.movieId == movieId)[0]
     console.log("MOVIE DETAILS")

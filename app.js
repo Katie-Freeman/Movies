@@ -1,9 +1,34 @@
 const express = require('express')
-const app = express() 
-const bodyParser = require("body-parser")
+const { redirect } = require('express/lib/response')
+const pgp = require('pg-promise')()
 const mustacheExpress = require('mustache-express')
-const moviesRouter = require('./routes/movies')
 const session = require('express-session')
+const authenticateMiddleware = require('./middlewears/authenticate')
+
+const app = express();
+const http = require('http').Server(app)
+const io = require('socket.io')(http)
+
+// const PORT = process.env.PORT || 8000
+
+io.on('connection', (socket) => {
+    console.log('User is connected')
+    
+
+    socket.on('Houston', (chat) => {
+        console.log(chat)
+        io.emit('Houston',(chat))
+    })
+})
+
+
+const bodyParser = require("body-parser")
+const cookieParser = require("cookie-parser")
+const moviesRouter = require('./routes/movies')
+
+
+global.movies = []
+global.users = []
 
 app.use(session({
     secret: 'Super secret words',
@@ -13,44 +38,35 @@ app.use(session({
 
 app.engine('mustache', mustacheExpress('./views' + '/partials', '.mustache'))
 app.set('views', './views')
+app.set('view engine', 'mustache')
+const connectionString = 'postgres://lfjthgno:fYgJ7KdxwdYefpdCFK586F6XZW1cilv7@castor.db.elephantsql.com/lfjthgno'
+
+const db = pgp(connectionString)
+app.get('/',(req,res) => {
+    res.render('index')
+  })
 
 app.use(bodyParser.urlencoded({extended: false}))
+app.use(cookieParser())
 app.use('/css', express.static("css")) 
+app.use(express.static("public"))
 app.use('/movies', moviesRouter)
-app.set('view engine', 'mustache')
 
-
-
-global.movies = []
-global.users = []
-
-function logMiddleware(req, res, next) {
-    console.log('MIDDLEWARE')
-    next() // continue with the original request 
-}
-
- function authenticateMiddleware(req, res, next) {
-
-    if(req.session) {
-        if(req.session.username) {
-            next() 
-        } else {
-            res.redirect('/')
-        }
-    } else {
-        res.redirect('/')
-    }
-
-}
-
-
+app.get('/chat', authenticateMiddleware, (req, res) => {
+    req.cookies.username = req.session.username
+    res.sendFile(__dirname + '/chat.html')
+})
 
 app.get('/api/users', (req, res) => {
     res.json(users)
 })
 
 app.get('/profile', authenticateMiddleware ,(req, res) => {
-    res.send('PROFILE')
+    let username = ''
+    if(req.session) {
+        username = req.session.username
+    }
+    res.send(`Username is ${username}`)
 })
 
 app.get('/dashboard', authenticateMiddleware, (req, res) => {
@@ -63,32 +79,35 @@ app.get('/add-user',(req,res) => {
   })
 
  
-  app.post('/add-user',(req,res) => {
+app.post('/add-user',(req,res) => {
 
-    let username = req.body.username
-    let password = req.body.password
-    let userId = users.length +1
-    console.log("Getting User name", {username, password})
-    users.push({username, password, userId})
-    
-    res.redirect('/')
-  })
+let username = req.body.username
+let password = req.body.password
+let userId = users.length +1
+console.log("Getting User name", {username, password})
+users.push({username, password, userId})
+
+res.redirect('/')
+})
 
 app.post('/login', (req, res) => {
     
     // get username from body 
-    const username = req.body.username 
+    const userId = req.body.userId 
     // get password from body 
     const password = req.body.password 
 
     const persistedUser = users.find(user => {
-        return user.username == username && user.password == password
+        return user.userId == userId && user.password == password
     })
+     
+    /* select one user by id */
+    const user = db.oneOrNone('SELECT * FROM users WHERE user_id = $1 LIMIT 1', userId, a => !!a);
 
     if(persistedUser) {
          // if username and password are matching 
-        if(req.session) {
-            req.session.username = persistedUser.username 
+        if(req.session) { 
+            req.session.userId = persistedUser.userId
         }
         res.redirect('/movies/add-movie')
     } else {
@@ -96,13 +115,17 @@ app.post('/login', (req, res) => {
     }
 })
 
+app.get('/logout', (req, res) => {
+  req.session.destroy()
+  res.redirect('/')  
+})
 
-app.get('/',(req,res) => {
-    res.render('index')
-  })
 
-
-app.listen(3000, () => {
+http.listen(3000, () => {
     console.log('Server is running...')
 })
+
+
+
+
 

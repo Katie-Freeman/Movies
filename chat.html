@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/styles.css"/>
+    <title>Chat</title>
+</head>
+<body>
+    <div id="menu">
+        <a id="home" href="/">Home</a>
+        <a id="addNew" href="/movies/add-movie">Add a new Movie</a>
+        <a id="viewAll" href="/movies">View All Movies</a>
+        <a id ="chat" href= '/chat'>Chat</a>
+        <a id="signout" href="/">Sign Out</a>
+    </div>
+
+    <h1>Chat</h1>
+    <input type="text" placeholder="message" id="chatTextBox"/>
+    <button id="sendMessageBtn">Send</button>
+    <ul id="messagesUL">
+
+    </ul>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket =io();
+    </script>
+    <script src = "/js/client.js"></script>
+
+</body>
+</html>

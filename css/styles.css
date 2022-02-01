@@ -1,9 +1,9 @@
 body {
     background-color: #fde4cf;
     font-family: sans-serif;
-    color: #586F7C
-    
+    color: #586F7C 
 }
+
 #moviesContainer {
     display: flex;
     background-color: #ffcfd2;
@@ -55,4 +55,9 @@ body {
 
 #menu a {
     color: #586F7C;
+}
+
+#messagesUL {
+    list-style-type: none;
+    background-color: #a0eff7cb ;
 }
